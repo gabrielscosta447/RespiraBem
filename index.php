@@ -19,7 +19,8 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $file = __DIR__ . $uri;
 
 if ($uri !== '/' && file_exists($file) && !is_dir($file)) {
-    header("Content-Type: application/javascript");
+
+    header('Content-Type: ' . mime_content_type($file));
     readfile($file);
     exit;
 }
