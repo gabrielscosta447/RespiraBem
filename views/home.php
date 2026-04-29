@@ -503,23 +503,23 @@ function carregarMapaELocalizacao() {
 
     L.marker([lat, lon]).addTo(map).bindPopup('Você está aqui!').openPopup();
     
-    
+        // retorno em html
        fetch(`${API_URL}/get_pollutitions?lat=${lat}&lon=${lon}`)
         .then(response => response.json())
         .then(data => {
-          let components = null;
-       
+        
+        let components = null;
+        if(data.data.current) {
 
-        if(data.current) {
-
-          delete data.current.time;
-          delete data.current.interval;
-          components = data.current;
+          delete data.data.current.time;
+          delete data.data.current.interval;
+          components = data.data.current;
 
         }else{
           components = data.data.list[0].components;
           const apiAQI = data.data.list[0].main.aqi;
-          const qualidadeDoAPelaAPI = getQualidadeDoAPI(apiAQI);}
+          const qualidadeDoAPelaAPI = getQualidadeDoAPI(apiAQI);
+        }
 
       
 
@@ -532,12 +532,11 @@ function carregarMapaELocalizacao() {
           const qualidadeGeralDiv = document.getElementById('qualidade-geral');
           qualidadeGeralDiv.innerHTML = "<h2>Qualidade Geral</h2>";
 
-
           const matrizPoluentes = Object.entries(components).map(([poluente, valor]) => {
           const normalizado = normalizarValorParaCalculo(poluente, valor);
           valor = normalizado.valor;
           let unidade = normalizado.unidade;
-
+        
           const indice = calcularIndice(poluente, valor);
           return {
           poluente: poluente.toUpperCase().replace('_', '.'),
@@ -582,7 +581,7 @@ function carregarMapaELocalizacao() {
           }
         })
         .catch(error => {
-          console.error('Erro ao buscar poluentes:', error);
+          console.error('Erro ao buscar poluentes:', error , error.response);
         });
     }, function(error) {
       alert('Não foi possível obter sua localização sem localização não é possível mostrar os dados de qualidade do ar.');
